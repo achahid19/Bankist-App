@@ -74,32 +74,8 @@ const inputClosePin = document.querySelector('.form__input--pin');
   // clicked, the page got refreshed. -> learn how to handle
   // this kind of behavior. // TO DO.🛑
 
+// turn on the opacity, only for dev purpose.
 containerApp.style.opacity = 100;
-// push a new built element
-// containerMovements.innerHTML = ''; // clear the container of all its elements
-// // push the movements of account 1 using the created function.
-// accounts[0]['movements'].forEach(function(amount, i) {
-// 	const movDataContainer = document.createElement('div');
-// 	const movDataType = document.createElement('div');
-// 	const movDataValue = document.createElement('div');
-// 	const movDataDate = document.createElement('div');
-
-// 	movDataContainer.classList = 'movements__row';
-
-// 	movDataType.classList = amount > 0 ? 'movements__type movements__type--deposit'
-// 							: 'movements__type movements__type--withdrawal';
-// 	movDataValue.classList = 'movements__value';
-// 	movDataDate.classList = 'movements__date';
-
-// 	movDataType.innerText = amount > 0 ? `${i + 1} deposit` : `${i + 1} withdrawal`;
-// 	movDataValue.innerText = amount;
-// 	movDataDate.innerText = '3 days ago';
-
-// 	movDataContainer.appendChild(movDataType);
-// 	movDataContainer.appendChild(movDataDate);
-// 	movDataContainer.appendChild(movDataValue);
-// 	containerMovements.prepend(movDataContainer);
-// })
 
 // built a display movements function
 const displayMovs = function(movements) {
@@ -115,7 +91,12 @@ const displayMovs = function(movements) {
 	})
 }
 
+const displayBalance = function(movements) {
+	labelBalance.textContent = `${movements.reduce((acc,mov) => acc + mov, 0)} EUR`;
+}
+
 displayMovs(account1.movements);
+displayBalance(account1.movements);
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
