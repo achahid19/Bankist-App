@@ -95,8 +95,27 @@ const displayBalance = function(movements) {
 	labelBalance.textContent = `${movements.reduce((acc,mov) => acc + mov, 0)} EUR`;
 }
 
+const calcDisplaySummary = function(movs) {
+	const incomes = movs.filter(mov => mov > 0)
+		.reduce((acc, mov) => acc + mov, 0);
+
+	labelSumIn.textContent = `${incomes}€`;
+
+	const out = movs.filter(mov => mov < 0)
+		.reduce((acc, mov) => acc + mov, 0);
+	
+	labelSumOut.textContent = `${Math.abs(out)}€`
+
+	const interest = movs.filter(mov => mov > 0)
+		.map((dep, i, arr) => (dep * 1.2) / 100)
+		.reduce((acc, interest) => acc + interest, 0);
+
+	labelSumInterest.textContent = interest;
+}
+
 displayMovs(account1.movements);
 displayBalance(account1.movements);
+calcDisplaySummary(account1.movements);
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
