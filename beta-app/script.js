@@ -6,7 +6,7 @@
 
 // Data
 const account1 = {
-  owner: 'test',
+  owner: 'Jonas Smith',
   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
   interestRate: 1.2, // %
   pin: 1111,
@@ -61,21 +61,6 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-// log the user, and display a raw UI
-// btnLogin.addEventListener('click', function() {
-//   accounts.forEach(function(account, i) {
-//     console.log(accounts[i]['owner']);
-//     if (accounts[i]['owner'] == inputLoginUsername
-//         && accounts[i]['pin'] == inputLoginPin) {
-//             containerApp.style.visibility = 'visible';
-//         }
-//   })
-// Problem faced, since the button is inside a form, once
-  // clicked, the page got refreshed. -> learn how to handle
-  // this kind of behavior. // TO DO.🛑
-
-// turn on the opacity, only for dev purpose.
-containerApp.style.opacity = 100;
 
 // built a display movements function
 const displayMovs = function(movements) {
@@ -95,27 +80,61 @@ const displayBalance = function(movements) {
 	labelBalance.textContent = `${movements.reduce((acc,mov) => acc + mov, 0)} EUR`;
 }
 
-const calcDisplaySummary = function(movs) {
-	const incomes = movs.filter(mov => mov > 0)
+const calcDisplaySummary = function(acc) {
+	const incomes = acc.movements.filter(mov => mov > 0)
 		.reduce((acc, mov) => acc + mov, 0);
 
 	labelSumIn.textContent = `${incomes}€`;
 
-	const out = movs.filter(mov => mov < 0)
+	const out = acc.movements.filter(mov => mov < 0)
 		.reduce((acc, mov) => acc + mov, 0);
 	
 	labelSumOut.textContent = `${Math.abs(out)}€`
 
-	const interest = movs.filter(mov => mov > 0)
-		.map((dep, i, arr) => (dep * 1.2) / 100)
+	const interest = acc.movements.filter(mov => mov > 0)
+		.map((dep, i, arr) => (dep * acc['interestRate']) / 100)
 		.reduce((acc, interest) => acc + interest, 0);
 
 	labelSumInterest.textContent = interest;
-}
+};
 
-displayMovs(account1.movements);
-displayBalance(account1.movements);
-calcDisplaySummary(account1.movements);
+// using IIFE (Immediately invoked function expression)
+// since usernames here are created one time.
+(function() {
+	accounts.map(function(acc) {
+		acc.userName = acc['owner']
+		.toLowerCase()
+		.split(' ')
+		.map(name => name[0])
+		.join('');
+	})
+})();
+
+//createUserNames(accounts);
+
+let	loginUser;
+
+btnLogin.addEventListener('click', function(e) {
+	e.preventDefault(); // prevent from submitting
+	
+	loginUser = accounts.find(acc => acc.userName === inputLoginUsername.value);
+
+	// optional chaining to prevent from accessing undefined
+	if (loginUser?.pin === Number(inputLoginPin.value)) {
+		// clear buffers
+		inputLoginUsername.value = inputLoginPin.value = ''; // assigning from right to left
+		inputLoginPin.blur(); // lose focus;
+		inputLoginUsername.blur();
+		containerApp.style.opacity = 1; // display UI
+		labelWelcome.textContent = `Welcome Again ${loginUser.owner.split(' ')[0]}`;
+		
+		// update UI
+		displayBalance(loginUser['movements']);
+		displayMovs(loginUser['movements']);
+		calcDisplaySummary(loginUser);
+	}
+})
+
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
