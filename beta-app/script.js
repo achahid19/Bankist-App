@@ -4,7 +4,8 @@
 /////////////////////////////////////////////////
 // BANKIST APP
 
-// Data
+// Data hard-coded for learning puposes
+// in real-life, we use data mostly from APIs
 const account1 = {
   owner: 'Jonas Smith',
   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
@@ -76,8 +77,9 @@ const displayMovs = function(movements) {
 	})
 }
 
-const displayBalance = function(movements) {
-	labelBalance.textContent = `${movements.reduce((acc,mov) => acc + mov, 0)} EUR`;
+const displayBalance = function(acc) {
+	acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
+	labelBalance.textContent = `${acc.balance} EUR`;
 }
 
 const calcDisplaySummary = function(acc) {
@@ -112,6 +114,14 @@ const calcDisplaySummary = function(acc) {
 
 //createUserNames(accounts);
 
+// Arrow-func can use variables before definition
+// but the call must be after definition.
+const updateUI = () => {
+	displayBalance(loginUser);
+	displayMovs(loginUser['movements']);
+	calcDisplaySummary(loginUser);
+}
+
 let	loginUser;
 
 btnLogin.addEventListener('click', function(e) {
@@ -128,13 +138,35 @@ btnLogin.addEventListener('click', function(e) {
 		containerApp.style.opacity = 1; // display UI
 		labelWelcome.textContent = `Welcome Again ${loginUser.owner.split(' ')[0]}`;
 		
-		// update UI
-		displayBalance(loginUser['movements']);
-		displayMovs(loginUser['movements']);
-		calcDisplaySummary(loginUser);
+		updateUI();
 	}
 })
 
+// Transfer feature
+btnTransfer.addEventListener('click', function(e) {
+	e.preventDefault();
+
+	const transferValue = Number(inputTransferAmount.value);
+	const recipient = accounts.find(
+		acc => acc.userName === inputTransferTo.value
+	);
+	
+	//check validity
+	if (recipient && transferValue > 0
+		&& transferValue < loginUser.balance
+		&& recipient?.userName != loginUser.userName
+		) {
+			loginUser.movements.push(-transferValue);
+			recipient.movements.push(transferValue);
+			
+			// auto update UI for logged user.
+			updateUI();
+		}
+
+	inputTransferAmount.value = inputTransferTo.value = '';
+	inputTransferAmount.blur();
+	inputTransferTo.blur();
+});
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
