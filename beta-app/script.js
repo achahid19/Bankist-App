@@ -168,5 +168,41 @@ btnTransfer.addEventListener('click', function(e) {
 	inputTransferTo.blur();
 });
 
+// Close account
+btnClose.addEventListener('click', function(e) {
+	e.preventDefault();
+
+	if (
+		inputCloseUsername.value === loginUser.userName
+		&& Number(inputClosePin.value) === loginUser.pin
+	) {
+		const index = accounts.findIndex(
+			acc => acc.userName === loginUser.userName
+		);
+		accounts.splice(index, 1);
+		containerApp.style.opacity = 0;
+	}
+	inputCloseUsername.value = inputClosePin.value = '';
+	inputClosePin.blur();
+	inputCloseUsername.blur();
+})
+
+// Loan functionality: still contains flaws
+// developed only for learning purpose
+btnLoan.addEventListener('click', function(e) {
+	e.preventDefault();
+
+	const amount = Number(inputLoanAmount.value);
+	if (
+		amount > 0
+		&& loginUser.movements.some(mov => mov >= amount * 0.10)
+	) {
+		loginUser.movements.push(amount);
+		updateUI();
+	}
+	inputLoanAmount.value = '';
+	inputLoanAmount.blur();
+})
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
