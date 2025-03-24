@@ -204,5 +204,22 @@ btnLoan.addEventListener('click', function(e) {
 	inputLoanAmount.blur();
 })
 
+let sorted = false;
+
+btnSort.addEventListener('click', function(e) {
+	e.preventDefault();
+
+	sorted ? displayMovs(loginUser['movements'])
+			: displayMovs(
+				loginUser['movements']
+				.slice()
+				.sort((a, b) => a - b)
+				// a - b > 0. no swap
+				// a - b < 0. swap
+				// a - b == 0. nothing done
+			);
+	sorted = !sorted;
+})
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
