@@ -8,7 +8,7 @@
 // in real-life, we use data mostly from APIs
 const account1 = {
   owner: 'Jonas Smith',
-  movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
+  movements: [200, 450.489, -400.32, 3000, -650, -130, 70, 1300],
   interestRate: 1.2, // %
   pin: 1111,
 };
@@ -70,7 +70,7 @@ const displayMovs = function(movements) {
 		const type = movement > 0 ? 'deposit' : 'withdrawal';
 		const htmlEl = `<div class="movements__row">
           <div class="movements__type movements__type--${type}">${i} ${type}</div>
-          <div class="movements__value">${movement}</div>
+          <div class="movements__value">${movement.toFixed(2)}€</div>
         </div>`;
 
 		containerMovements.insertAdjacentHTML('afterbegin', htmlEl);
@@ -79,25 +79,25 @@ const displayMovs = function(movements) {
 
 const displayBalance = function(acc) {
 	acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-	labelBalance.textContent = `${acc.balance} EUR`;
+	labelBalance.textContent = `${acc.balance.toFixed(2)} EUR`;
 }
 
 const calcDisplaySummary = function(acc) {
 	const incomes = acc.movements.filter(mov => mov > 0)
 		.reduce((acc, mov) => acc + mov, 0);
 
-	labelSumIn.textContent = `${incomes}€`;
+	labelSumIn.textContent = `${incomes.toFixed(2)}€`;
 
 	const out = acc.movements.filter(mov => mov < 0)
 		.reduce((acc, mov) => acc + mov, 0);
 	
-	labelSumOut.textContent = `${Math.abs(out)}€`
+	labelSumOut.textContent = `${Math.abs(out).toFixed(2)}€`
 
 	const interest = acc.movements.filter(mov => mov > 0)
 		.map((dep, i, arr) => (dep * acc['interestRate']) / 100)
 		.reduce((acc, interest) => acc + interest, 0);
 
-	labelSumInterest.textContent = interest;
+	labelSumInterest.textContent = interest.toFixed(2);
 };
 
 // using IIFE (Immediately invoked function expression)
@@ -192,7 +192,7 @@ btnClose.addEventListener('click', function(e) {
 btnLoan.addEventListener('click', function(e) {
 	e.preventDefault();
 
-	const amount = Number(inputLoanAmount.value);
+	const amount = Math.floor(inputLoanAmount.value);
 	if (
 		amount > 0
 		&& loginUser.movements.some(mov => mov >= amount * 0.10)
