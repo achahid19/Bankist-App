@@ -90,11 +90,11 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 
 // built a display movements function
-const displayMovs = function(movements, movementsDates) {
+const displayMovs = function(acc) {
 	containerMovements.innerHTML = ''; // clear container.
 	
-	movements.forEach(function(movement, i) {
-		const movDate = new Date(`${movementsDates[i]}`);
+	acc.movements.forEach(function(movement, i) {
+		const movDate = new Date(`${acc['movementsDates'][i]}`);
 		const day = `${movDate.getDate()}`.padStart(2, 0);
 		const month = `${movDate.getMonth() + 1}`.padStart(2, 0); // Month in js in 0 based lol.
 		const year = `${movDate.getFullYear()}`;
@@ -151,7 +151,7 @@ const calcDisplaySummary = function(acc) {
 // but the call must be after definition.
 const updateUI = () => {
 	displayBalance(loginUser);
-	displayMovs(loginUser['movements'], loginUser['movementsDates']);
+	displayMovs(loginUser);
 	calcDisplaySummary(loginUser);
 }
 
@@ -254,17 +254,22 @@ let sorted = false;
 btnSort.addEventListener('click', function(e) {
 	e.preventDefault();
 
-	sorted ? displayMovs(loginUser['movements'], loginUser['movementsDates'])
-			: displayMovs(
-				loginUser['movements']
-				.slice()
-				.sort((a, b) => a - b)
-				// a - b > 0. no swap
-				// a - b < 0. swap
-				// a - b == 0. nothing done
-				, loginUser['movementsDates'] 
-				// dates needs to be sorted again, for simplicity im going to keep them intact.
-			);
+	const sortingLoginUser = loginUser['movements'].map((mov, i) => ({
+		movements: mov,
+		movementsDates: loginUser['movementsDates'].at(i)
+	}));
+	const sortedObj = {movements: [], movementsDates: []};
+
+	sorted ? sortingLoginUser :	sortingLoginUser.sort(
+		(a, b) => a['movements'] - b['movements']
+	);	// a - b > 0. no swap
+		// a - b < 0. swap
+		// a - b == 0. nothing done
+	sortingLoginUser.forEach((mov) => {
+		sortedObj['movements'].push(mov['movements']);
+		sortedObj['movementsDates'].push(mov['movementsDates']);
+	});			
+	displayMovs(sortedObj);
 	sorted = !sorted;
 })
 
