@@ -124,6 +124,8 @@ const formattedMovDate = function (date, mov = false) {
 		year: 'numeric',
 		//weekday: 'long'
 	}
+	// Intl API documentation -> https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl
+	// ISO language code table -> http://www.lingoes.net/en/translator/langcode.htm
 	const internalionalFormat = new Intl.DateTimeFormat(loginUser.locale, options).format(date);
 
 	return internalionalFormat;
