@@ -124,8 +124,7 @@ const formattedMovDate = function (date, mov = false) {
 		year: 'numeric',
 		//weekday: 'long'
 	}
-	const now = new Date();
-	const internalionalFormat = new Intl.DateTimeFormat(loginUser.locale, options).format(now);
+	const internalionalFormat = new Intl.DateTimeFormat(loginUser.locale, options).format(date);
 
 	return internalionalFormat;
 }
