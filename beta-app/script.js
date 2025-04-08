@@ -305,9 +305,11 @@ btnLoan.addEventListener('click', function(e) {
 		amount > 0
 		&& loginUser.movements.some(mov => mov >= amount * 0.10)
 	) {
-		loginUser['movements'].push(amount);
-		loginUser['movementsDates'].push(new Date().toISOString());
-		updateUI();
+		setTimeout(() => {
+			loginUser['movements'].push(amount);
+			loginUser['movementsDates'].push(new Date().toISOString());
+			updateUI();
+		}, 3000);
 	}
 	inputLoanAmount.value = '';
 	inputLoanAmount.blur();
