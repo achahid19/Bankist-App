@@ -99,7 +99,7 @@ containerApp.style.opacity = 1; */
 
 let	loginUser;
 
-// formatted date
+// format dates
 const formattedMovDate = function (date, mov = false) {
 	if (mov) {
 		const calcDaysPassed = (date1, date2) => Math.round(
@@ -112,8 +112,10 @@ const formattedMovDate = function (date, mov = false) {
 		else if (daysPassed <= 7) return `${daysPassed} days ago`;
 	}
 
-	// get the local language from user-client, depending on their localisation.
-	const locale = navigator.language;
+	/* get the local language from user-client, depending on their localisation.
+	Whereas on our application, i'am going to retrieve it manually from
+	the account object. */
+	// const locale = navigator.language;
 	const options = {
 		hour: 'numeric',
 		minute: 'numeric',
@@ -123,13 +125,10 @@ const formattedMovDate = function (date, mov = false) {
 		weekday: 'long'
 	}
 	const now = new Date();
-	const internalionalFormat = new Intl.DateTimeFormat(locale, options).format(now);
+	const internalionalFormat = new Intl.DateTimeFormat(loginUser.locale, options).format(now);
 
 	return internalionalFormat;
 }
-
-// format the date of labelDate
-labelDate.textContent = formattedMovDate(new Date());
 
 // built a display movements function
 const displayMovs = function(acc) {
@@ -210,6 +209,8 @@ btnLogin.addEventListener('click', function(e) {
 		
 		updateUI();
 	}
+	// format the date of labelDate
+	labelDate.textContent = formattedMovDate(new Date());
 })
 
 // Transfer feature
