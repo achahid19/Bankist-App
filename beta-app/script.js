@@ -120,9 +120,9 @@ const formattedMovDate = function (date, mov = false) {
 		hour: 'numeric',
 		minute: 'numeric',
 		day: 'numeric',
-		month: 'long',
+		month: 'numeric',
 		year: 'numeric',
-		weekday: 'long'
+		//weekday: 'long'
 	}
 	const now = new Date();
 	const internalionalFormat = new Intl.DateTimeFormat(loginUser.locale, options).format(now);
