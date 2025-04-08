@@ -88,24 +88,44 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+// FAKE the login. /////////////
+
+/*
+let	loginUser = accounts[0];
+updateUI();
+containerApp.style.opacity = 1; */
+
+///////////////////////////////
+
+let	loginUser;
+
 // formatted date
 const formattedMovDate = function (date, mov = false) {
-	const calcDaysPassed = (date1, date2) => Math.round(
-		Math.abs((date2 - date1) / (1000 * 60 * 60 * 24))
-	);
-	const daysPassed = calcDaysPassed(new Date(), date);
-
 	if (mov) {
+		const calcDaysPassed = (date1, date2) => Math.round(
+			Math.abs((date2 - date1) / (1000 * 60 * 60 * 24))
+		);
+		const daysPassed = calcDaysPassed(new Date(), date);
+	
 		if (daysPassed === 0) return 'Today';
 		else if (daysPassed === -1) return 'Yesterday';
 		else if (daysPassed <= 7) return `${daysPassed} days ago`;
 	}
-	
-	const day = `${date.getDate()}`.padStart(2, 0);
-	const month = `${date.getMonth() + 1}`.padStart(2, 0); // Month in js in 0 based lol.
-	const year = `${date.getFullYear()}`;
 
-	return `${day}/${month}/${year}`;
+	// get the local language from user-client, depending on their localisation.
+	const locale = navigator.language;
+	const options = {
+		hour: 'numeric',
+		minute: 'numeric',
+		day: 'numeric',
+		month: 'long',
+		year: 'numeric',
+		weekday: 'long'
+	}
+	const now = new Date();
+	const internalionalFormat = new Intl.DateTimeFormat(locale, options).format(now);
+
+	return internalionalFormat;
 }
 
 // format the date of labelDate
@@ -173,17 +193,6 @@ const updateUI = () => {
 	displayMovs(loginUser);
 	calcDisplaySummary(loginUser);
 }
-
-// FAKE the login. /////////////
-
-/*
-let	loginUser = accounts[0];
-updateUI();
-containerApp.style.opacity = 1; */
-
-///////////////////////////////
-
-let	loginUser;
 
 btnLogin.addEventListener('click', function(e) {
 	e.preventDefault(); // prevent from submitting
