@@ -47,10 +47,23 @@ const account1 = {
   };
   
 const account3 = {
-  owner: 'Steven Thomas Williams',
-  movements: [200, -200, 340, -300, -20, 50, 400, -460],
+  owner: 'Anas Chahid Ksabi',
+  movements: [200000, -200, 340, -300, -20, 50, 400, -460],
   interestRate: 0.7,
   pin: 3333,
+
+  movementsDates: [
+	'2019-11-01T13:15:33.035Z',
+	'2019-11-30T09:48:16.867Z',
+	'2019-12-25T06:04:23.907Z',
+	'2020-01-25T14:18:46.235Z',
+	'2020-02-05T16:33:06.386Z',
+	'2025-04-07T14:43:26.374Z',
+	'2020-06-25T18:49:59.371Z',
+	'2025-04-01T12:01:20.894Z',
+  ],
+  currency: 'MAR',
+  locale: 'fr-FR',
 };
 
 const account4 = {
@@ -60,7 +73,7 @@ const account4 = {
   pin: 4444,
 };
 
-const accounts = [account1, account2];
+const accounts = [account1, account2, account3];
 
 // Elements
 const labelWelcome = document.querySelector('.welcome');
@@ -131,6 +144,10 @@ const formattedMovDate = function (date, mov = false) {
 	return internalionalFormat;
 }
 
+const formatToIntlNumber = (locale, options = {}, num) => {
+	return (new Intl.NumberFormat(locale, options).format(num));
+};
+
 // built a display movements function
 const displayMovs = function(acc) {
 	containerMovements.innerHTML = ''; // clear container.
@@ -139,10 +156,16 @@ const displayMovs = function(acc) {
 		const movDate = new Date(`${acc['movementsDates'][i]}`);
 		const getDate = formattedMovDate(movDate, true);
 		const type = movement > 0 ? 'deposit' : 'withdrawal';
+		const options = {
+			style: 'currency',
+			currency: acc.currency,
+		}
 		const htmlEl = `<div class="movements__row">
 			<div class="movements__type movements__type--${type}">${i} ${type}</div>
 			<div class="movements__date">${getDate}</div>
-			<div class="movements__value">${movement.toFixed(2)}€</div>
+			<div class="movements__value">${formatToIntlNumber(
+				acc.locale, options, movement
+			)}</div>
 			</div>`;
 
 		containerMovements.insertAdjacentHTML('afterbegin', htmlEl);
@@ -150,26 +173,41 @@ const displayMovs = function(acc) {
 }
 
 const displayBalance = function(acc) {
-	acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-	labelBalance.textContent = `${acc.balance.toFixed(2)} EUR`;
+	acc.balance = acc.movements.reduce((accm, mov) => accm + mov, 0);
+	labelBalance.textContent = `${new Intl.NumberFormat(
+		acc.locale, {
+			style: 'currency',
+			currency: acc.currency,
+		}).format(acc.balance)
+	}`;
 }
 
 const calcDisplaySummary = function(acc) {
+	const options = {
+		style: 'currency',
+		currency: acc.currency,
+	}
 	const incomes = acc.movements.filter(mov => mov > 0)
 		.reduce((acc, mov) => acc + mov, 0);
 
-	labelSumIn.textContent = `${incomes.toFixed(2)}€`;
+	labelSumIn.textContent = `${formatToIntlNumber(
+		acc.locale, options, incomes
+	)}`;
 
 	const out = acc.movements.filter(mov => mov < 0)
 		.reduce((acc, mov) => acc + mov, 0);
 	
-	labelSumOut.textContent = `${Math.abs(out).toFixed(2)}€`
+	labelSumOut.textContent = `${formatToIntlNumber(
+		acc.locale, options, out
+	)}`;
 
 	const interest = acc.movements.filter(mov => mov > 0)
 		.map((dep, i, arr) => (dep * acc['interestRate']) / 100)
 		.reduce((acc, interest) => acc + interest, 0);
 
-	labelSumInterest.textContent = interest.toFixed(2);
+	labelSumInterest.textContent = `${formatToIntlNumber(
+		acc.locale, options, interest
+	)}`;
 };
 
 // using IIFE (Immediately invoked function expression)
@@ -207,11 +245,10 @@ btnLogin.addEventListener('click', function(e) {
 		inputLoginUsername.blur();
 		containerApp.style.opacity = 1; // display UI
 		labelWelcome.textContent = `Welcome Again ${loginUser.owner.split(' ')[0]}`;
-		
+		labelDate.textContent = formattedMovDate(new Date());
+	
 		updateUI();
 	}
-	// format the date of labelDate
-	labelDate.textContent = formattedMovDate(new Date());
 })
 
 // Transfer feature
@@ -288,7 +325,12 @@ btnSort.addEventListener('click', function(e) {
 		movements: mov,
 		movementsDates: loginUser['movementsDates'].at(i)
 	}));
-	const sortedObj = {movements: [], movementsDates: []};
+	const sortedObj = {
+		movements: [],
+		movementsDates: [],
+		locale: loginUser.locale,
+		currency: loginUser.currency,
+	};
 
 	sorted ? sortingLoginUser :	sortingLoginUser.sort(
 		(a, b) => a['movements'] - b['movements']
