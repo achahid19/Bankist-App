@@ -144,8 +144,16 @@ const formattedMovDate = function (date, mov = false) {
 	return internalionalFormat;
 }
 
-const formatToIntlNumber = (locale, options = {}, num) => {
-	return (new Intl.NumberFormat(locale, options).format(num));
+const formatToIntlNumber = (locale, currency, num) => {
+	return (
+			new Intl.NumberFormat(
+				locale,
+				{
+					style: 'currency',
+					currency: currency,
+				}
+			).format(num)
+		);
 };
 
 // built a display movements function
@@ -156,15 +164,11 @@ const displayMovs = function(acc) {
 		const movDate = new Date(`${acc['movementsDates'][i]}`);
 		const getDate = formattedMovDate(movDate, true);
 		const type = movement > 0 ? 'deposit' : 'withdrawal';
-		const options = {
-			style: 'currency',
-			currency: acc.currency,
-		}
 		const htmlEl = `<div class="movements__row">
 			<div class="movements__type movements__type--${type}">${i} ${type}</div>
 			<div class="movements__date">${getDate}</div>
 			<div class="movements__value">${formatToIntlNumber(
-				acc.locale, options, movement
+				acc.locale, acc.currency, movement
 			)}</div>
 			</div>`;
 
@@ -174,31 +178,24 @@ const displayMovs = function(acc) {
 
 const displayBalance = function(acc) {
 	acc.balance = acc.movements.reduce((accm, mov) => accm + mov, 0);
-	labelBalance.textContent = `${new Intl.NumberFormat(
-		acc.locale, {
-			style: 'currency',
-			currency: acc.currency,
-		}).format(acc.balance)
-	}`;
+	labelBalance.textContent = formatToIntlNumber(
+		acc.locale, acc.currency, acc.balance
+	);
 }
 
 const calcDisplaySummary = function(acc) {
-	const options = {
-		style: 'currency',
-		currency: acc.currency,
-	}
 	const incomes = acc.movements.filter(mov => mov > 0)
 		.reduce((acc, mov) => acc + mov, 0);
 
 	labelSumIn.textContent = `${formatToIntlNumber(
-		acc.locale, options, incomes
+		acc.locale, acc.currency, incomes
 	)}`;
 
 	const out = acc.movements.filter(mov => mov < 0)
 		.reduce((acc, mov) => acc + mov, 0);
 	
 	labelSumOut.textContent = `${formatToIntlNumber(
-		acc.locale, options, out
+		acc.locale, acc.currency, out
 	)}`;
 
 	const interest = acc.movements.filter(mov => mov > 0)
@@ -206,7 +203,7 @@ const calcDisplaySummary = function(acc) {
 		.reduce((acc, interest) => acc + interest, 0);
 
 	labelSumInterest.textContent = `${formatToIntlNumber(
-		acc.locale, options, interest
+		acc.locale, acc.currency, interest
 	)}`;
 };
 
