@@ -89,15 +89,17 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 // formatted date
-const formattedMovDate = function (date) {
+const formattedMovDate = function (date, mov = false) {
 	const calcDaysPassed = (date1, date2) => Math.round(
 		Math.abs((date2 - date1) / (1000 * 60 * 60 * 24))
 	);
 	const daysPassed = calcDaysPassed(new Date(), date);
 
-	if (daysPassed === 0) return 'Today';
-	else if (daysPassed === -1) return 'Yesterday';
-	else if (daysPassed <= 7) return `${daysPassed} days ago`;
+	if (mov) {
+		if (daysPassed === 0) return 'Today';
+		else if (daysPassed === -1) return 'Yesterday';
+		else if (daysPassed <= 7) return `${daysPassed} days ago`;
+	}
 	
 	const day = `${date.getDate()}`.padStart(2, 0);
 	const month = `${date.getMonth() + 1}`.padStart(2, 0); // Month in js in 0 based lol.
@@ -106,13 +108,16 @@ const formattedMovDate = function (date) {
 	return `${day}/${month}/${year}`;
 }
 
+// format the date of labelDate
+labelDate.textContent = formattedMovDate(new Date());
+
 // built a display movements function
 const displayMovs = function(acc) {
 	containerMovements.innerHTML = ''; // clear container.
 	
 	acc.movements.forEach(function(movement, i) {
 		const movDate = new Date(`${acc['movementsDates'][i]}`);
-		const getDate = formattedMovDate(movDate);
+		const getDate = formattedMovDate(movDate, true);
 		const type = movement > 0 ? 'deposit' : 'withdrawal';
 		const htmlEl = `<div class="movements__row">
 			<div class="movements__type movements__type--${type}">${i} ${type}</div>
